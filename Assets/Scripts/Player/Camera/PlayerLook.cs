@@ -5,7 +5,7 @@ public class PlayerLook : MonoBehaviour
 {
     private PlayerCore playerCore;
     private Transform cam;
-    [SerializeField] private float sensitivity = 0.1f;
+    public float sensitivity = 0.5f;
 
     //角度制限(x:上下、y:左右)
     [SerializeField] private float minX = -90f;
@@ -16,6 +16,9 @@ public class PlayerLook : MonoBehaviour
     [SerializeField] private float minY = -90f;
     [SerializeField] private float maxY = 90f;
     
+   
+
+
     private float initialYaw;
     //新InputSystem
     private PlayerInputActions inputActions;
@@ -33,6 +36,7 @@ public class PlayerLook : MonoBehaviour
     }
     void Start()
     {
+        sensitivity = PlayerPrefs.GetFloat("Sensitivity", 0.5f);
         playerCore = GetComponent<PlayerCore>();
         cam = playerCore.cameraPivot;
 

@@ -145,6 +145,24 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Menu"",
+                    ""type"": ""Button"",
+                    ""id"": ""70d96b74-49a4-4ae3-9398-a76911b9431b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CursorLock"",
+                    ""type"": ""Button"",
+                    ""id"": ""b5b3b3d5-9e6c-482b-a706-6005cf3c1b5b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -257,6 +275,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""SwitchLight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""184a4aad-5863-46f6-8ff6-ddcd403178fe"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f7573b40-ad79-4327-a8c0-9fdae5c8c270"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CursorLock"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -271,6 +311,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_PutLight = m_Player.FindAction("PutLight", throwIfNotFound: true);
         m_Player_TakeLight = m_Player.FindAction("TakeLight", throwIfNotFound: true);
         m_Player_SwitchLight = m_Player.FindAction("SwitchLight", throwIfNotFound: true);
+        m_Player_Menu = m_Player.FindAction("Menu", throwIfNotFound: true);
+        m_Player_CursorLock = m_Player.FindAction("CursorLock", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -357,6 +399,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_PutLight;
     private readonly InputAction m_Player_TakeLight;
     private readonly InputAction m_Player_SwitchLight;
+    private readonly InputAction m_Player_Menu;
+    private readonly InputAction m_Player_CursorLock;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -392,6 +436,14 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/SwitchLight".
         /// </summary>
         public InputAction @SwitchLight => m_Wrapper.m_Player_SwitchLight;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Menu".
+        /// </summary>
+        public InputAction @Menu => m_Wrapper.m_Player_Menu;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/CursorLock".
+        /// </summary>
+        public InputAction @CursorLock => m_Wrapper.m_Player_CursorLock;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -436,6 +488,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @SwitchLight.started += instance.OnSwitchLight;
             @SwitchLight.performed += instance.OnSwitchLight;
             @SwitchLight.canceled += instance.OnSwitchLight;
+            @Menu.started += instance.OnMenu;
+            @Menu.performed += instance.OnMenu;
+            @Menu.canceled += instance.OnMenu;
+            @CursorLock.started += instance.OnCursorLock;
+            @CursorLock.performed += instance.OnCursorLock;
+            @CursorLock.canceled += instance.OnCursorLock;
         }
 
         /// <summary>
@@ -465,6 +523,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @SwitchLight.started -= instance.OnSwitchLight;
             @SwitchLight.performed -= instance.OnSwitchLight;
             @SwitchLight.canceled -= instance.OnSwitchLight;
+            @Menu.started -= instance.OnMenu;
+            @Menu.performed -= instance.OnMenu;
+            @Menu.canceled -= instance.OnMenu;
+            @CursorLock.started -= instance.OnCursorLock;
+            @CursorLock.performed -= instance.OnCursorLock;
+            @CursorLock.canceled -= instance.OnCursorLock;
         }
 
         /// <summary>
@@ -547,5 +611,19 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSwitchLight(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Menu" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMenu(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CursorLock" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCursorLock(InputAction.CallbackContext context);
     }
 }

@@ -6,12 +6,14 @@ using UnityEngine.VFX;
 public class CameraManager : MonoBehaviour
 {
     // Start is called before the first frame update
-    [SerializeField] private Camera mainCamera;
+    public Camera mainCamera;
     private PlayerSwitchManager switchManager;
 
     [SerializeField] private float nearClipPlane = 0.1f;
     private void Awake()
     {
+
+        mainCamera.fieldOfView = PlayerPrefs.GetFloat("FOV", 90f);
         switchManager = GetComponent<PlayerSwitchManager>();
         if (mainCamera == null)
         {
@@ -45,34 +47,10 @@ public class CameraManager : MonoBehaviour
         mainCamera.transform.localRotation = Quaternion.identity;
     }
 
-    void Start()
+    public void SetFOV(float value)
     {
-        LockCursor();
+        mainCamera.fieldOfView = value;
     }
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            UnlockCursor();
-        }
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            LockCursor();
-        }
-    }
-
-    private void UnlockCursor()
-    {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-    }
-
-    private void LockCursor()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-    }
-
+ 
 
 }

@@ -7,6 +7,8 @@ public struct MoveInput
     public bool putPressed;
     public bool takePressed;
     public bool switchPressed;
+    public bool menuPressed;
+    public bool cursorLockPressed;
 }
 
 public class PlayerInputManager : MonoBehaviour
@@ -38,7 +40,9 @@ public class PlayerInputManager : MonoBehaviour
             jumpPressed = input.Player.Jump.triggered,
             putPressed = input.Player.PutLight.triggered,
             takePressed = input.Player.TakeLight.triggered,
-            switchPressed = input.Player.SwitchLight.triggered
+            switchPressed = input.Player.SwitchLight.triggered,
+            menuPressed = input.Player.Menu.triggered,
+            cursorLockPressed = input.Player.CursorLock.triggered,
         };
     }
 }
