@@ -22,10 +22,11 @@ public class PlayerLightController : MonoBehaviour
 
     private void Update()
     {
+        if (!playerCore.CanMove) return;
         MoveInput input = inputManager.CurrentInput;
         if (input.putPressed && playerCore.HasLight)
         {
-            GameObject flashLight = Instantiate(flashLightOrigin, playerCore.cameraPivot.position, playerCore.cameraPivot.rotation);
+            GameObject flashLight = Instantiate(flashLightOrigin, playerCore.cameraPivot.position + playerCore.cameraPivot.forward * 0.3f, playerCore.cameraPivot.rotation);
             LightController flashlight_lc = flashLight.GetComponent<LightController>();
             flashlight_lc.isShining = lightController.isShining;
             flashlight_lc.UpdateLight();

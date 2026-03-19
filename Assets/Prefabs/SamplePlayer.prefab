@@ -341,11 +341,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lightObj: {fileID: 1281549152363172739}
-  rayDistance: 20
+  rayDistance: 40
   cameraPivot: {fileID: 8643123430540849380}
   minRadius: 1
-  maxRadius: 2.5
-  maxDistance: 20
+  maxRadius: 8
+  maxDistance: 40
   isShining: 0
   isDynamic: 1
 --- !u!114 &8817988283580792259

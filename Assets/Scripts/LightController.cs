@@ -4,12 +4,12 @@ using System.Collections.Generic;
 public class LightController : MonoBehaviour
 {
     public GameObject lightObj;
-    public float rayDistance = 20f;
+    public float rayDistance = 40f;
     public Transform cameraPivot;
     [Header("Light Settings")]
     public float minRadius = 1f;
     public float maxRadius = 2.5f;
-    public float maxDistance = 10f;
+    public float maxDistance = 50f;
     public bool isShining = false;
 
     public bool isDynamic = false;
@@ -45,28 +45,50 @@ public class LightController : MonoBehaviour
         //ライト中心を取得
 
         int layerMask = ~LayerMask.GetMask("Player");
-        if (Physics.Raycast(cameraPivot.position, cameraPivot.forward, out RaycastHit hit, rayDistance, layerMask))
+        RaycastHit[] hits = Physics.RaycastAll(
+            cameraPivot.position,
+            cameraPivot.forward,
+            rayDistance,
+            layerMask
+        );
+        if (hits.Length > 0)
         {
-            Debug.Log(hit.collider.gameObject.name);
-            float distance = hit.distance;
-            float dynamicRadius = Mathf.Lerp(minRadius, maxRadius, distance / maxDistance);
-            //範囲内のブロック取得
-            Collider[] hits = Physics.OverlapSphere(hit.point, dynamicRadius);
+            // 距離順に並べる（重要）
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
-            foreach (var col in hits)
+            foreach (var hit in hits)
             {
+                GameObject obj = hit.collider.gameObject;
 
-                if (col.CompareTag("Erasable"))
+                
+                
+                
+
+                float distance = hit.distance;
+                float dynamicRadius = Mathf.Lerp(minRadius, maxRadius, distance / maxDistance);
+
+                Collider[] cols = Physics.OverlapSphere(hit.point, dynamicRadius);
+                bool isExistErasable = false;
+                foreach (var col in cols)
                 {
-
-                    GameObject block = col.gameObject;
-                    if (block.activeSelf) 
+                    if (col.CompareTag("Erasable"))
                     {
-                        block.SetActive(false);
-                        currentBlocks.Add(block);
+                        isExistErasable = true;
+                        GameObject block = col.gameObject;
+                        if (block.activeSelf)
+                        {
+                            block.SetActive(false);
+                            currentBlocks.Add(block);
+                        }
                     }
+                }
+
+                if (!isExistErasable)
+                {
+                    break;
                 }
             }
         }
+        
     }
 }
