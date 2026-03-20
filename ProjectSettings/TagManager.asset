@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Erasable
   - FlashLight
+  - Switch
   layers:
   - Default
   - TransparentFX
