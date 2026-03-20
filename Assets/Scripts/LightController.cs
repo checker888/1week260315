@@ -104,20 +104,19 @@ public class LightController : MonoBehaviour
             {
                 GameObject obj = hit.collider.gameObject;
 
+                // Erasableでなければ遮蔽物として終了
+                if (!hit.collider.CompareTag("Erasable"))
+                {
+                    break;
+                }
 
-
-
-
-                float distance = hit.distance;
-                float dynamicRadius = Mathf.Lerp(minRadius, maxRadius, distance / maxDistance);
-
+                // OverlapSphereで周囲を消す
+                float dynamicRadius = Mathf.Lerp(minRadius, maxRadius, hit.distance / maxDistance);
                 Collider[] cols = Physics.OverlapSphere(hit.point, dynamicRadius);
-                bool isExistErasable = false;
                 foreach (var col in cols)
                 {
                     if (col.CompareTag("Erasable"))
                     {
-                        isExistErasable = true;
                         GameObject block = col.gameObject;
                         if (block.activeSelf)
                         {
@@ -125,11 +124,6 @@ public class LightController : MonoBehaviour
                             currentBlocks.Add(block);
                         }
                     }
-                }
-
-                if (!isExistErasable)
-                {
-                    break;
                 }
             }
         }
