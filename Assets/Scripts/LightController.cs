@@ -28,22 +28,66 @@ public class LightController : MonoBehaviour
     }
     public void UpdateLight()
     {
-
+        List<GameObject> workBlocks = new List<GameObject>();
         // ① 前フレームのを戻す
         foreach (var block in currentBlocks)
         {
             if (block != null || !isShining)
-                block.SetActive(true);
+            {
+                Collider col = block.GetComponent<Collider>();
+                if (col != null)
+                {
+                    if (isDynamic)
+                    {
+                        Collider[] hitsc = Physics.OverlapBox(
+                            col.bounds.center,
+                            col.bounds.extents,
+                            block.transform.rotation
+                        );
+
+                        bool isTouchingPlayer = false;
+
+                        foreach (var h in hitsc)
+                        {
+                            if (h.CompareTag("Player"))
+                            {
+                                isTouchingPlayer = true;
+                                break;
+                            }
+                        }
+
+                        if (isTouchingPlayer)
+                        {
+                            // 接触してるなら戻さない
+                            workBlocks.Add(block);
+                        }
+                        else
+                        {
+                            block.SetActive(true);
+                        }
+                    }
+                    else
+                    {
+                        block.SetActive(true);
+                    }
+                    // Playerとの接触チェック
+
+
+                }
+            }
         }
         currentBlocks.Clear();
+        foreach (var block in workBlocks)
+        {
+            currentBlocks.Add(block);
+        }
+        if (!isShining)
+        {
 
-        if (!isShining) {
-            
             return;
         }
-        
-        //ライト中心を取得
 
+        //ライト中心を取得
         int layerMask = ~LayerMask.GetMask("Player");
         RaycastHit[] hits = Physics.RaycastAll(
             cameraPivot.position,
@@ -60,9 +104,9 @@ public class LightController : MonoBehaviour
             {
                 GameObject obj = hit.collider.gameObject;
 
-                
-                
-                
+
+
+
 
                 float distance = hit.distance;
                 float dynamicRadius = Mathf.Lerp(minRadius, maxRadius, distance / maxDistance);
@@ -89,6 +133,6 @@ public class LightController : MonoBehaviour
                 }
             }
         }
-        
+
     }
 }

@@ -29,6 +29,7 @@ public class PlayerLightController : MonoBehaviour
             GameObject flashLight = Instantiate(flashLightOrigin, playerCore.cameraPivot.position + playerCore.cameraPivot.forward * 0.3f, playerCore.cameraPivot.rotation);
             LightController flashlight_lc = flashLight.GetComponent<LightController>();
             flashlight_lc.isShining = lightController.isShining;
+            flashlight_lc.isDynamic = false;
             flashlight_lc.UpdateLight();
             SetFlashLight(false, false);
             
@@ -42,6 +43,7 @@ public class PlayerLightController : MonoBehaviour
                 LightController flashlight_lc = obj.GetComponent<LightController>();
                 SetFlashLight(true, flashlight_lc.isShining);
                 flashlight_lc.isShining = false;
+                flashlight_lc.isDynamic = true;
                 flashlight_lc.UpdateLight();
                 
                 Destroy(obj);
