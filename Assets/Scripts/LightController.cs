@@ -34,46 +34,56 @@ public class LightController : MonoBehaviour
         {
             if (block != null || !isShining)
             {
-                Collider col = block.GetComponent<Collider>();
-                if (col != null)
+                if(block.tag == "Switch")
                 {
-                    if (isDynamic)
+                    SwitchBlockController sc = block.GetComponent<SwitchBlockController>();
+                    sc.isLit = false;
+                    sc.UpdateBlockState();
+                }
+                else
+                {
+                    Collider col = block.GetComponent<Collider>();
+                    if (col != null)
                     {
-                        Collider[] hitsc = Physics.OverlapBox(
-                            col.bounds.center,
-                            col.bounds.extents,
-                            block.transform.rotation
-                        );
-
-                        bool isTouchingPlayer = false;
-
-                        foreach (var h in hitsc)
+                        if (isDynamic)
                         {
-                            if (h.CompareTag("Player"))
+                            Collider[] hitsc = Physics.OverlapBox(
+                                col.bounds.center,
+                                col.bounds.extents,
+                                block.transform.rotation
+                            );
+
+                            bool isTouchingPlayer = false;
+
+                            foreach (var h in hitsc)
                             {
-                                isTouchingPlayer = true;
-                                break;
+                                if (h.CompareTag("Player"))
+                                {
+                                    isTouchingPlayer = true;
+                                    break;
+                                }
                             }
-                        }
 
-                        if (isTouchingPlayer)
-                        {
-                            // 接触してるなら戻さない
-                            workBlocks.Add(block);
+                            if (isTouchingPlayer)
+                            {
+                                // 接触してるなら戻さない
+                                workBlocks.Add(block);
+                            }
+                            else
+                            {
+                                block.SetActive(true);
+                            }
                         }
                         else
                         {
                             block.SetActive(true);
                         }
-                    }
-                    else
-                    {
-                        block.SetActive(true);
-                    }
-                    // Playerとの接触チェック
+                        // Playerとの接触チェック
 
 
+                    }
                 }
+
             }
         }
         currentBlocks.Clear();
@@ -105,10 +115,10 @@ public class LightController : MonoBehaviour
                 GameObject obj = hit.collider.gameObject;
 
                 // Erasableでなければ遮蔽物として終了
-                if (!hit.collider.CompareTag("Erasable"))
-                {
-                    break;
-                }
+                //if (!hit.collider.CompareTag("Erasable") && !hit.collider.CompareTag("Switch"))
+                //{
+                //    break;
+                //}
 
                 // OverlapSphereで周囲を消す
                 float dynamicRadius = Mathf.Lerp(minRadius, maxRadius, hit.distance / maxDistance);
@@ -123,7 +133,19 @@ public class LightController : MonoBehaviour
                             block.SetActive(false);
                             currentBlocks.Add(block);
                         }
+                    }else if (col.CompareTag("Switch"))
+                    {
+                        GameObject block = col.gameObject;
+                        SwitchBlockController sc = block.GetComponent<SwitchBlockController>();
+                        sc.isLit = true;
+                        sc.UpdateBlockState();
+                        currentBlocks.Add(block);
                     }
+                }
+                 //Erasableでなければ遮蔽物として終了
+                if (!hit.collider.CompareTag("Erasable") && !hit.collider.CompareTag("Switch"))
+                { 
+                    break;
                 }
             }
         }
