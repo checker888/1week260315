@@ -168,4 +168,24 @@ public class LightController : MonoBehaviour
             scs.Remove(sc);
         }
     }
+
+    // 設置物からプレイヤーへSwitchBlockの状態を引き継ぐ
+    public void InheritSwitchState(LightController other)
+    {
+        foreach (var kvp in other.timers)
+        {
+            timers[kvp.Key] = Time.time; // タイマーをリセットして引き継ぐ
+        }
+        foreach (var sc in other.scs)
+        {
+            if (!scs.Contains(sc))
+                scs.Add(sc);
+        }
+        // 照射中だったSwitchBlockもcurrentBlocksに引き継ぐ
+        foreach (var block in other.currentBlocks)
+        {
+            if (block != null && !currentBlocks.Contains(block))
+                currentBlocks.Add(block);
+        }
+    }
 }

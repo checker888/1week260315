@@ -37,21 +37,35 @@ public class PlayerLightController : MonoBehaviour
             
             playerFlashLightObj.SetActive(false);
         }
-        if (input.takePressed && !playerCore.HasLight &&Physics.Raycast(playerCore.cameraPivot.position, playerCore.cameraPivot.forward, out RaycastHit hit, rayDistance) ){
+        if (input.takePressed && !playerCore.HasLight &&
+            Physics.Raycast(playerCore.cameraPivot.position, playerCore.cameraPivot.forward,
+            out RaycastHit hit, rayDistance))
+        {
             GameObject obj = hit.collider.gameObject;
-            if (obj.CompareTag("FlashLight")){
+            if (obj.CompareTag("FlashLight"))
+            {
                 LightController flashlight_lc = obj.GetComponent<LightController>();
                 SetFlashLight(true, flashlight_lc.isShining);
+
+                // ① 先にSwitchBlock状態を引き継ぐ
+                lightController.InheritSwitchState(flashlight_lc);
+
+                // ② 設置物をisShining=falseにする前に、プレイヤー側のUpdateLightを即時実行
                 flashlight_lc.isShining = false;
                 flashlight_lc.isDynamic = true;
+
+                // ③ 設置物のUpdateLightを呼ぶ前にプレイヤー側を更新してBarrierを消す
+                lightController.UpdateLight();
+
+                // ④ その後に設置物を処理（これでBarrierが復元されても即座に再消去済み）
                 flashlight_lc.UpdateLight();
-                
+
                 Destroy(obj);
                 playerFlashLightObj.SetActive(true);
                 LightCheck();
             }
         }
-        if(input.switchPressed && playerCore.HasLight)
+        if (input.switchPressed && playerCore.HasLight)
         {
             lightController.isShining = !lightController.isShining;
             LightCheck();
