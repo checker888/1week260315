@@ -8,6 +8,7 @@ TagManager:
   - FlashLight
   - Switch
   - Barrier
+  - Glass
   layers:
   - Default
   - TransparentFX
