@@ -13,77 +13,31 @@ public class LightController : MonoBehaviour
     public bool isShining = false;
 
     public bool isDynamic = false;
-    // 今フレームで消えてるブロック
+    private List<GameObject> workBlocks;
     private List<GameObject> currentBlocks = new List<GameObject>();
+    private List<SwitchBlockController> scs = new List<SwitchBlockController>();
+    private float unlitDelay = 0.1f;
+    private Dictionary<SwitchBlockController, float> timers = new();
     void Start()
     {
-        //if (isDynamic)
-        //{
-        //    InvokeRepeating(nameof(UpdateLight), 0f, 0.08f);
-        //}else if(isShining)
-        //{
-        //    UpdateLight();
-        //}
         InvokeRepeating(nameof(UpdateLight), 0f, 0.08f);
     }
     public void UpdateLight()
     {
-        List<GameObject> workBlocks = new List<GameObject>();
-        // ① 前フレームのを戻す
+        workBlocks = new List<GameObject>();
         foreach (var block in currentBlocks)
         {
             if (block != null || !isShining)
             {
-                if(block.tag == "Switch")
+                if (block.tag == "Switch")
                 {
                     SwitchBlockController sc = block.GetComponent<SwitchBlockController>();
-                    sc.isLit = false;
-                    sc.UpdateBlockState();
+                    scs.Add(sc);
                 }
                 else
                 {
-                    Collider col = block.GetComponent<Collider>();
-                    if (col != null)
-                    {
-                        if (isDynamic)
-                        {
-                            Collider[] hitsc = Physics.OverlapBox(
-                                col.bounds.center,
-                                col.bounds.extents,
-                                block.transform.rotation
-                            );
-
-                            bool isTouchingPlayer = false;
-
-                            foreach (var h in hitsc)
-                            {
-                                if (h.CompareTag("Player"))
-                                {
-                                    isTouchingPlayer = true;
-                                    break;
-                                }
-                            }
-
-                            if (isTouchingPlayer)
-                            {
-                                // 接触してるなら戻さない
-                                workBlocks.Add(block);
-                            }
-                            else
-                            {
-                                block.SetActive(true);
-                            }
-                        }
-                        else
-                        {
-                            block.SetActive(true);
-                        }
-                        // Playerとの接触チェック
-
-
-                    }
+                    EraseCheck(block);
                 }
-
             }
         }
         currentBlocks.Clear();
@@ -93,11 +47,9 @@ public class LightController : MonoBehaviour
         }
         if (!isShining)
         {
-
             return;
         }
 
-        //ライト中心を取得
         int layerMask = ~LayerMask.GetMask("Player");
         RaycastHit[] hits = Physics.RaycastAll(
             cameraPivot.position,
@@ -107,20 +59,12 @@ public class LightController : MonoBehaviour
         );
         if (hits.Length > 0)
         {
-            // 距離順に並べる（重要）
             System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
             foreach (var hit in hits)
             {
                 GameObject obj = hit.collider.gameObject;
 
-                // Erasableでなければ遮蔽物として終了
-                //if (!hit.collider.CompareTag("Erasable") && !hit.collider.CompareTag("Switch"))
-                //{
-                //    break;
-                //}
-
-                // OverlapSphereで周囲を消す
                 float dynamicRadius = Mathf.Lerp(minRadius, maxRadius, hit.distance / maxDistance);
                 Collider[] cols = Physics.OverlapSphere(hit.point, dynamicRadius);
                 foreach (var col in cols)
@@ -133,22 +77,89 @@ public class LightController : MonoBehaviour
                             block.SetActive(false);
                             currentBlocks.Add(block);
                         }
-                    }else if (col.CompareTag("Switch"))
+                    }
+                    else if (col.CompareTag("Switch"))
                     {
                         GameObject block = col.gameObject;
                         SwitchBlockController sc = block.GetComponent<SwitchBlockController>();
-                        sc.isLit = true;
-                        sc.UpdateBlockState();
+
+                        timers[sc] = Time.time;
+
+                        if (!sc.isLit)
+                        {
+                            sc.isLit = true;
+                            sc.UpdateBlockState();
+                        }
+
                         currentBlocks.Add(block);
+                        if (scs.Contains(sc))
+                        {
+                            scs.Remove(sc);
+                        }
                     }
                 }
-                 //Erasableでなければ遮蔽物として終了
                 if (!hit.collider.CompareTag("Erasable") && !hit.collider.CompareTag("Switch"))
-                { 
+                {
                     break;
                 }
             }
         }
 
+        List<SwitchBlockController> toRemove = new List<SwitchBlockController>();
+
+        foreach (SwitchBlockController sc in scs)
+        {
+            if (Time.time - timers.GetValueOrDefault(sc, 0f) > unlitDelay)
+            {
+                sc.isLit = false;
+                sc.UpdateBlockState();
+                toRemove.Add(sc);
+            }
+        }
+
+        foreach (var sc in toRemove)
+        {
+            scs.Remove(sc);
+        }
+    }
+
+    public void EraseCheck(GameObject block)
+    {
+        Collider col = block.GetComponent<Collider>();
+        if (col != null)
+        {
+            if (isDynamic)
+            {
+                Collider[] hitsc = Physics.OverlapBox(
+                    col.bounds.center,
+                    col.bounds.extents,
+                    block.transform.rotation
+                );
+
+                bool isTouchingPlayer = false;
+
+                foreach (var h in hitsc)
+                {
+                    if (h.CompareTag("Player"))
+                    {
+                        isTouchingPlayer = true;
+                        break;
+                    }
+                }
+
+                if (isTouchingPlayer)
+                {
+                    workBlocks.Add(block);
+                }
+                else
+                {
+                    block.SetActive(true);
+                }
+            }
+            else
+            {
+                block.SetActive(true);
+            }
+        }
     }
 }
