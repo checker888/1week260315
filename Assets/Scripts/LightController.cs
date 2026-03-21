@@ -47,6 +47,7 @@ public class LightController : MonoBehaviour
         }
         if (!isShining)
         {
+            SCSCheck();
             return;
         }
 
@@ -98,29 +99,14 @@ public class LightController : MonoBehaviour
                         }
                     }
                 }
-                if (!hit.collider.CompareTag("Erasable") && !hit.collider.CompareTag("Switch"))
+                if (!hit.collider.CompareTag("Erasable") && !hit.collider.CompareTag("Switch") &&!hit.collider.CompareTag("Glass"))
                 {
                     break;
                 }
             }
         }
 
-        List<SwitchBlockController> toRemove = new List<SwitchBlockController>();
-
-        foreach (SwitchBlockController sc in scs)
-        {
-            if (Time.time - timers.GetValueOrDefault(sc, 0f) > unlitDelay)
-            {
-                sc.isLit = false;
-                sc.UpdateBlockState();
-                toRemove.Add(sc);
-            }
-        }
-
-        foreach (var sc in toRemove)
-        {
-            scs.Remove(sc);
-        }
+        SCSCheck();
     }
 
     public void EraseCheck(GameObject block)
@@ -160,6 +146,26 @@ public class LightController : MonoBehaviour
             {
                 block.SetActive(true);
             }
+        }
+    }
+
+    public void SCSCheck()
+    {
+        List<SwitchBlockController> toRemove = new List<SwitchBlockController>();
+
+        foreach (SwitchBlockController sc in scs)
+        {
+            if (Time.time - timers.GetValueOrDefault(sc, 0f) > unlitDelay)
+            {
+                sc.isLit = false;
+                sc.UpdateBlockState();
+                toRemove.Add(sc);
+            }
+        }
+
+        foreach (var sc in toRemove)
+        {
+            scs.Remove(sc);
         }
     }
 }
