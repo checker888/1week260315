@@ -26,16 +26,7 @@ public class PlayerLightController : MonoBehaviour
         MoveInput input = inputManager.CurrentInput;
         if (input.putPressed && playerCore.HasLight)
         {
-            GameObject flashLight = Instantiate(flashLightOrigin, playerCore.cameraPivot.position + playerCore.cameraPivot.forward * 0.3f, playerCore.cameraPivot.rotation);
-            LightController flashlight_lc = flashLight.GetComponent<LightController>();
-            flashlight_lc.isShining = lightController.isShining;
-            flashlight_lc.isDynamic = false;
-            flashlight_lc.UpdateLight();
-            SetFlashLight(false, false);
-            
-            flashlight_lc.lightObj.SetActive(flashlight_lc.isShining);
-            
-            playerFlashLightObj.SetActive(false);
+            PutLight(playerCore.cameraPivot.position + playerCore.cameraPivot.forward * 0.3f, playerCore.cameraPivot.rotation, lightController.isShining);
         }
         if (input.takePressed && !playerCore.HasLight &&
             Physics.Raycast(playerCore.cameraPivot.position, playerCore.cameraPivot.forward,
@@ -70,6 +61,20 @@ public class PlayerLightController : MonoBehaviour
             lightController.isShining = !lightController.isShining;
             LightCheck();
         }
+    }
+
+    public void PutLight(Vector3 pos, Quaternion rot, bool _isShining)
+    {
+        GameObject flashLight = Instantiate(flashLightOrigin, pos, rot);
+        LightController flashlight_lc = flashLight.GetComponent<LightController>();
+        flashlight_lc.isShining = _isShining;
+        flashlight_lc.isDynamic = false;
+        flashlight_lc.UpdateLight();
+        SetFlashLight(false, false);
+
+        flashlight_lc.lightObj.SetActive(flashlight_lc.isShining);
+
+        playerFlashLightObj.SetActive(false);
     }
     void LightCheck()
     {
