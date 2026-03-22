@@ -17,7 +17,11 @@ public class WallGridController : MonoBehaviour
 
     void Start()
     {
-        playerTransform = GameObject.FindWithTag("Player").transform;
+        playerTransform = GameObject.FindWithTag("Player")?.transform;
+        if(playerTransform == null)
+        {
+            playerTransform =  GameObject.FindWithTag("MainCamera")?.transform;
+        }
         BuildGrid();
     }
 
