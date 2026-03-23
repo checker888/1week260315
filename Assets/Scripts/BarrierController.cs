@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BarrierController : MonoBehaviour
@@ -7,11 +5,11 @@ public class BarrierController : MonoBehaviour
     public GameObject parentSwitchBlock;
     public AudioSource audioSource;
 
-    private void OnDisable()
+    public void PlayDisableSound()
     {
-        if (audioSource != null)
+        if (audioSource != null && audioSource.clip != null)
         {
-            audioSource.Play();
+            AudioSource.PlayClipAtPoint(audioSource.clip, transform.position);
         }
     }
 }

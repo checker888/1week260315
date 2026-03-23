@@ -59,7 +59,12 @@ public class SwitchBlockController : MonoBehaviour
             foreach (var obj in targetObjects)
             {
                 if (obj != null)
+                {
+                    BarrierController bc = obj.GetComponent<BarrierController>();
+                    bc.PlayDisableSound();
                     obj.SetActive(false);
+                }
+                    
             }
 
             if (rend != null)

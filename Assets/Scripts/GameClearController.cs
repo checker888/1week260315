@@ -74,8 +74,8 @@ public class GameClearController : MonoBehaviour
             PlayerPrefs.SetFloat("BestTime", currentTime);
         }
 
-        // NowTimeはリセット（次回新規スタート用）
-        PlayerPrefs.SetFloat("NowTime", 0f);
+
+        PlayerPrefs.SetFloat("NowTime", currentTime);
         PlayerPrefs.SetInt("NowCheckPoint", 0);
         PlayerPrefs.Save();
 
