@@ -16,7 +16,8 @@ public class GameClearController : MonoBehaviour
         if (isClearing) return;
 
         isClearing = true;
-        PlayerCore pc = other.GetComponent<PlayerCore>();
+        PlayerCore pc = other.gameObject.GetComponent<PlayerCore>();
+        FindObjectOfType<PlayerSwitchManager>().isGameCleared = true;
         pc.CanMove = false;
         StartCoroutine(ClearSequence());
     }

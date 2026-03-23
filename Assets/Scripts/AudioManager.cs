@@ -1,26 +1,21 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using UnityEngine.Audio;
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager Instance;
-
-    public List<AudioSource> bgmSource;
-    public List<AudioSource> seSource;
-
+    [SerializeField] AudioMixer audioMixer;
     public float bgmVolume;
     public float seVolume;
 
-    void Awake()
-    {
-        Instance = this;
-
-    }
 
     void Start()
     {
-        bgmVolume = PlayerPrefs.GetFloat("BGM", 0.5f);
-        seVolume = PlayerPrefs.GetFloat("SE", 0.5f);
+        bgmVolume = PlayerPrefs.GetFloat("BGM", -40f);
+        seVolume = PlayerPrefs.GetFloat("SE", -40f);
+        SetBGMVolume(bgmVolume);
+        SetSEVolume(seVolume);
     }
 
     public void PlaySE(AudioSource seSource, AudioClip clip)
@@ -28,23 +23,14 @@ public class AudioManager : MonoBehaviour
         seSource.PlayOneShot(clip, seVolume);
     }
 
-    public void SetBGMVolume(float value)
+    public void SetBGMVolume(float volume)
     {
-        bgmVolume = value;
-        foreach (AudioSource source in bgmSource)
-        {
-            source.volume = value;
-        }
+        audioMixer.SetFloat("BGM", volume);
     }
 
-    public void SetSEVolume(float value)
+    public void SetSEVolume(float volume)
     {
-        seVolume = value;
-        foreach (AudioSource source in seSource)
-        {
-            source.volume = value;
-        }
+        audioMixer.SetFloat("SE", volume);
     }
-
 
 }

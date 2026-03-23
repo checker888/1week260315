@@ -40,16 +40,16 @@ public class SettingManager : MonoBehaviour
         cameraManager = GetComponent<CameraManager>();
         crosshairManager = GetComponent<CrosshairManager>();
 
-        tempBGM = PlayerPrefs.GetFloat("BGM", 0.5f);
-        tempSE = PlayerPrefs.GetFloat("SE", 0.5f);
+        tempBGM = PlayerPrefs.GetFloat("BGM", -40f);
+        tempSE = PlayerPrefs.GetFloat("SE", -40f);
         tempSensitivity = PlayerPrefs.GetFloat("Sensitivity", 2f);
         tempFOV = PlayerPrefs.GetFloat("Sensitivity", 90f);
         tempCrosshair = PlayerPrefs.GetInt("Crosshair", 1);
 
-        BGMSlider.minValue = 0f;
-        BGMSlider.maxValue = 1f;
-        SESlider.minValue = 0f;
-        SESlider.maxValue = 1f;
+        BGMSlider.minValue = -80f;
+        BGMSlider.maxValue = 0f;
+        SESlider.minValue = -80f;
+        SESlider.maxValue = 0f;
         sensitivitySlider.minValue = 0.01f;
         sensitivitySlider.maxValue = 2f;
         FOVSlider.minValue = 60f;
@@ -67,6 +67,8 @@ public class SettingManager : MonoBehaviour
         sensitivitySlider.value = tempSensitivity;
         FOVSlider.value = tempFOV;
         crosshairToggle.isOn = tempCrosshair == 1;
+
+
 
     }
 

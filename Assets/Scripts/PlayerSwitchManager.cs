@@ -12,7 +12,7 @@ public class PlayerSwitchManager: MonoBehaviour
 
     private PlayerCore currentPlayer;
     private SettingManager settingManager;
-
+    public bool isGameCleared = false;
     void Start()
     {
         firstPlayer = firstPlayerObj.GetComponent<PlayerCore>();
@@ -25,6 +25,7 @@ public class PlayerSwitchManager: MonoBehaviour
 
     void Update()
     {
+        if (isGameCleared) return;
         MoveInput input = inputManager.CurrentInput;
 
         if (input.menuPressed)
