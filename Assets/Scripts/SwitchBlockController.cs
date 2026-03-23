@@ -14,9 +14,41 @@ public class SwitchBlockController : MonoBehaviour
     public Color offColor = Color.red;
     public Color onColor = Color.green;
 
+    // 追加：どのライトが当たっているか管理
+    private HashSet<LightController> lights = new HashSet<LightController>();
+
     private void Start()
     {
         UpdateBlockState();
+    }
+
+    // ライトが当たったとき
+    public void OnLightEnter(LightController lc)
+    {
+        if (lights.Add(lc))
+        {
+            ApplyState();
+        }
+    }
+
+    // ライトが外れたとき
+    public void OnLightExit(LightController lc)
+    {
+        if (lights.Remove(lc))
+        {
+            ApplyState();
+        }
+    }
+
+    void ApplyState()
+    {
+        bool isLitNow = lights.Count > 0;
+
+        if (isLit != isLitNow)
+        {
+            isLit = isLitNow;
+            UpdateBlockState();
+        }
     }
 
     public void UpdateBlockState()

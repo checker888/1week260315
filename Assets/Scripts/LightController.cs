@@ -6,58 +6,70 @@ public class LightController : MonoBehaviour
     public GameObject lightObj;
     public float rayDistance = 40f;
     public Transform cameraPivot;
+
     [Header("Light Settings")]
     public float minRadius = 1f;
     public float maxRadius = 2.5f;
     public float maxDistance = 50f;
-    public bool isShining = false;
 
+    public bool isShining = false;
     public bool isDynamic = false;
+
     private List<GameObject> workBlocks;
     private List<GameObject> currentBlocks = new List<GameObject>();
-    private List<SwitchBlockController> scs = new List<SwitchBlockController>();
-    private float unlitDelay = 0.1f;
-    private Dictionary<SwitchBlockController, float> timers = new();
+
+    // 変更：Switch管理をHashSetに
+    private HashSet<SwitchBlockController> currentSwitches = new HashSet<SwitchBlockController>();
+
     void Start()
     {
         InvokeRepeating(nameof(UpdateLight), 0f, 0.08f);
     }
+
     public void UpdateLight()
     {
         workBlocks = new List<GameObject>();
+
+        // --- 前フレームのSwitchを保存 ---
+        var previousSwitches = new HashSet<SwitchBlockController>(currentSwitches);
+        currentSwitches.Clear();
+
         foreach (var block in currentBlocks)
         {
             if (block != null || !isShining)
             {
-                if (block.tag == "Switch")
-                {
-                    SwitchBlockController sc = block.GetComponent<SwitchBlockController>();
-                    scs.Add(sc);
-                }
-                else
+                if (block.tag != "Switch")
                 {
                     EraseCheck(block);
                 }
             }
         }
+
         currentBlocks.Clear();
         foreach (var block in workBlocks)
         {
             currentBlocks.Add(block);
         }
+
+        // 光が消えてるなら全Exit
         if (!isShining)
         {
-            SCSCheck();
+            foreach (var sc in previousSwitches)
+            {
+                sc.OnLightExit(this);
+            }
             return;
         }
 
         int layerMask = ~LayerMask.GetMask("Player");
+
         RaycastHit[] hits = Physics.RaycastAll(
             cameraPivot.position,
             cameraPivot.forward,
             rayDistance,
             layerMask
         );
+
         if (hits.Length > 0)
         {
             System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
@@ -68,6 +80,7 @@ public class LightController : MonoBehaviour
 
                 float dynamicRadius = Mathf.Lerp(minRadius, maxRadius, hit.distance / maxDistance);
                 Collider[] cols = Physics.OverlapSphere(hit.point, dynamicRadius);
+
                 foreach (var col in cols)
                 {
                     if (col.CompareTag("Erasable"))
@@ -81,32 +94,35 @@ public class LightController : MonoBehaviour
                     }
                     else if (col.CompareTag("Switch"))
                     {
-                        GameObject block = col.gameObject;
-                        SwitchBlockController sc = block.GetComponent<SwitchBlockController>();
+                        var sc = col.GetComponent<SwitchBlockController>();
 
-                        timers[sc] = Time.time;
-
-                        if (!sc.isLit)
+                        // 今フレーム当たってる
+                        if (currentSwitches.Add(sc))
                         {
-                            sc.isLit = true;
-                            sc.UpdateBlockState();
+                            sc.OnLightEnter(this);
                         }
 
-                        currentBlocks.Add(block);
-                        if (scs.Contains(sc))
-                        {
-                            scs.Remove(sc);
-                        }
+                        currentBlocks.Add(col.gameObject);
                     }
                 }
-                if (!hit.collider.CompareTag("Erasable") && !hit.collider.CompareTag("Switch") &&!hit.collider.CompareTag("Glass"))
+
+                if (!hit.collider.CompareTag("Erasable") &&
+                    !hit.collider.CompareTag("Switch") &&
+                    !hit.collider.CompareTag("Glass"))
                 {
                     break;
                 }
             }
         }
 
-        SCSCheck();
+        // 前フレームにあって今ない = Exit
+        foreach (var sc in previousSwitches)
+        {
+            if (!currentSwitches.Contains(sc))
+            {
+                sc.OnLightExit(this);
+            }
+        }
     }
 
     public void EraseCheck(GameObject block)
@@ -149,43 +165,22 @@ public class LightController : MonoBehaviour
         }
     }
 
-    public void SCSCheck()
-    {
-        List<SwitchBlockController> toRemove = new List<SwitchBlockController>();
-
-        foreach (SwitchBlockController sc in scs)
-        {
-            if (Time.time - timers.GetValueOrDefault(sc, 0f) > unlitDelay)
-            {
-                sc.isLit = false;
-                sc.UpdateBlockState();
-                toRemove.Add(sc);
-            }
-        }
-
-        foreach (var sc in toRemove)
-        {
-            scs.Remove(sc);
-        }
-    }
-
     // 設置物からプレイヤーへSwitchBlockの状態を引き継ぐ
     public void InheritSwitchState(LightController other)
     {
-        foreach (var kvp in other.timers)
+        foreach (var sc in other.currentSwitches)
         {
-            timers[kvp.Key] = Time.time; // タイマーをリセットして引き継ぐ
+            sc.OnLightEnter(this);
+            currentSwitches.Add(sc);
         }
-        foreach (var sc in other.scs)
+    }
+
+    void OnDisable()
+    {
+        foreach (var sc in currentSwitches)
         {
-            if (!scs.Contains(sc))
-                scs.Add(sc);
+            sc.OnLightExit(this);
         }
-        // 照射中だったSwitchBlockもcurrentBlocksに引き継ぐ
-        foreach (var block in other.currentBlocks)
-        {
-            if (block != null && !currentBlocks.Contains(block))
-                currentBlocks.Add(block);
-        }
+        currentSwitches.Clear();
     }
 }

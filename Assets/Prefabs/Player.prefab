@@ -417,7 +417,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flashLightOrigin: {fileID: 7716995019104586270, guid: 175db44c76816a541940651040882108, type: 3}
-  rayDistance: 2
+  rayDistance: 4
   playerFlashLightObj: {fileID: 5701079642620533583}
   lightObj: {fileID: 1281549152363172739}
 --- !u!1001 &2595775085393187153

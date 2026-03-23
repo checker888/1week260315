@@ -6,6 +6,7 @@ public class AudioManager : MonoBehaviour
     public static AudioManager Instance;
 
     public List<AudioSource> bgmSource;
+    public List<AudioSource> seSource;
 
     public float bgmVolume;
     public float seVolume;
@@ -39,6 +40,10 @@ public class AudioManager : MonoBehaviour
     public void SetSEVolume(float value)
     {
         seVolume = value;
+        foreach (AudioSource source in seSource)
+        {
+            source.volume = value;
+        }
     }
 
 
