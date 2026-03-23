@@ -13,6 +13,9 @@ public class PlayerLightController : MonoBehaviour
 
     public GameObject playerFlashLightObj;
     public GameObject lightObj;
+
+    public AudioSource onSound;
+    public AudioSource offSound;
     private void Start()
     {
         playerCore = GetComponent<PlayerCore>();
@@ -59,6 +62,15 @@ public class PlayerLightController : MonoBehaviour
         if (input.switchPressed && playerCore.HasLight)
         {
             lightController.isShining = !lightController.isShining;
+
+            if (lightController.isShining)
+            {
+                onSound.Play();
+            }
+            else
+            {
+                offSound.Play();
+            }
             LightCheck();
         }
     }

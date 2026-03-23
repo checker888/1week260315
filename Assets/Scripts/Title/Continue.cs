@@ -1,18 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Continue : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public GameObject continueButtonObj;
+    private Button continueButton;
+
+    public void Start()
     {
-        
+        continueButton = continueButtonObj.GetComponent<Button>();
+        continueButton.onClick.AddListener(ContinueGame);
+        if(PlayerPrefs.GetInt("NowCheckPoint", -1) == -1)
+        {
+            continueButtonObj.SetActive(false);
+
+        }
+        else
+        {
+            continueButtonObj.SetActive(true);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+
+    void ContinueGame()
     {
-        
+        SceneManager.LoadScene("Main");
+
     }
 }

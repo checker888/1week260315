@@ -5,13 +5,13 @@ using UnityEngine.UI;
 
 public class Resume : MonoBehaviour
 {
-    public Button resumeButtton;
+    public Button resumeButton;
     private MenuViewManager menuViewManager;
     // Start is called before the first frame update
     void Start()
     {
         menuViewManager = GetComponent<MenuViewManager>();
-        resumeButtton.onClick.AddListener(ResumeGame);
+        resumeButton.onClick.AddListener(ResumeGame);
     }
 
     // Update is called once per frame
