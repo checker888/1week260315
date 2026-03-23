@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using unityroom.Api;
 
 public class ClearTimeController : MonoBehaviour
 {
@@ -20,6 +21,10 @@ public class ClearTimeController : MonoBehaviour
             timeText.text =  "クリアタイム：" + FormatTime(clearTime);
         }
 
+
+        // ボードNo1にスコア123.45fを送信する。
+        float bestTime = PlayerPrefs.GetFloat("Besttime", float.MaxValue);
+        UnityroomApiClient.Instance.SendScore(1, bestTime, ScoreboardWriteMode.HighScoreAsc);
 
         PlayerPrefs.SetFloat("NowTime", 0f);
         PlayerPrefs.Save();
