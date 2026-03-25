@@ -12,8 +12,8 @@ public class AudioManager : MonoBehaviour
 
     void Start()
     {
-        bgmVolume = PlayerPrefs.GetFloat("BGM", -40f);
-        seVolume = PlayerPrefs.GetFloat("SE", -40f);
+        bgmVolume = PlayerPrefs.GetFloat("BGM", 0.5f);
+        seVolume = PlayerPrefs.GetFloat("SE", 0.5f);
         SetBGMVolume(bgmVolume);
         SetSEVolume(seVolume);
     }
@@ -25,12 +25,20 @@ public class AudioManager : MonoBehaviour
 
     public void SetBGMVolume(float volume)
     {
-        audioMixer.SetFloat("BGM", volume);
+        volume = Mathf.Clamp01(volume);
+
+        float decibel = 20f * Mathf.Log10(volume);
+        decibel = Mathf.Clamp(decibel, -80f, 0f);
+        audioMixer.SetFloat("BGM", decibel);
     }
 
     public void SetSEVolume(float volume)
     {
-        audioMixer.SetFloat("SE", volume);
+        volume = Mathf.Clamp01(volume);
+
+        float decibel = 20f * Mathf.Log10(volume);
+        decibel = Mathf.Clamp(decibel, -80f, 0f);
+        audioMixer.SetFloat("SE", decibel);
     }
 
 }

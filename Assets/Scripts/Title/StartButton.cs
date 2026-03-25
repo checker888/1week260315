@@ -11,12 +11,14 @@ public class StartButton : MonoBehaviour
     public void Start()
     {
         startButton.onClick.AddListener(StartGame);
+
     }
 
 
     void StartGame()
     {
         PlayerPrefs.SetInt("NowCheckPoint", 0);
+        PlayerPrefs.SetFloat("NowTime", 0f);
         SceneManager.LoadScene("Main");
 
     }

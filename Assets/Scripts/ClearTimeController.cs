@@ -23,7 +23,7 @@ public class ClearTimeController : MonoBehaviour
 
 
         // ボードNo1にスコア123.45fを送信する。
-        float bestTime = PlayerPrefs.GetFloat("Besttime", float.MaxValue);
+        float bestTime = PlayerPrefs.GetFloat("BestTime", float.MaxValue);
         UnityroomApiClient.Instance.SendScore(1, bestTime, ScoreboardWriteMode.HighScoreAsc);
 
         PlayerPrefs.SetFloat("NowTime", 0f);

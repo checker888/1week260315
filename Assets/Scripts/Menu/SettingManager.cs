@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class SettingManager : MonoBehaviour
@@ -40,16 +41,16 @@ public class SettingManager : MonoBehaviour
         cameraManager = GetComponent<CameraManager>();
         crosshairManager = GetComponent<CrosshairManager>();
 
-        tempBGM = PlayerPrefs.GetFloat("BGM", -40f);
-        tempSE = PlayerPrefs.GetFloat("SE", -40f);
+        tempBGM = PlayerPrefs.GetFloat("BGM", 0.5f);
+        tempSE = PlayerPrefs.GetFloat("SE", 0.5f);
         tempSensitivity = PlayerPrefs.GetFloat("Sensitivity", 2f);
-        tempFOV = PlayerPrefs.GetFloat("Sensitivity", 90f);
+        tempFOV = PlayerPrefs.GetFloat("FOV", 90f);
         tempCrosshair = PlayerPrefs.GetInt("Crosshair", 1);
 
-        BGMSlider.minValue = -80f;
-        BGMSlider.maxValue = 0f;
-        SESlider.minValue = -80f;
-        SESlider.maxValue = 0f;
+        BGMSlider.minValue = 0f;
+        BGMSlider.maxValue = 1f;
+        SESlider.minValue = 0f;
+        SESlider.maxValue = 1f;
         sensitivitySlider.minValue = 0.01f;
         sensitivitySlider.maxValue = 2f;
         FOVSlider.minValue = 60f;
@@ -112,5 +113,14 @@ public class SettingManager : MonoBehaviour
     public void PushSettingsButton()
     {
         menuViewManager.SetMenu("Settings");
+    }
+
+    public float ChangeDecibel(float value) 
+    {
+        value = Mathf.Clamp01(value);
+
+        float decibel = 20f * Mathf.Log10(value);
+        decibel = Mathf.Clamp(decibel, -80f, 0f);
+        return decibel;
     }
 }
